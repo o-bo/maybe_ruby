@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class MaybeRubyTest < Minitest::Test
+class TestMaybeRuby < Minitest::Test
 
 
   def setup
