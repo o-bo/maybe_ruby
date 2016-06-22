@@ -122,6 +122,15 @@ class TestMaybe < Minitest::Test
   end
 
 
+  def test_apply_on_nothing
+    maybe_proc = Maybe(->(n) { n*n })
+
+    assert_equal Maybe(nil)
+      .apply(maybe_proc)
+      .get, nil
+  end
+
+
   def test_apply_with_nil_and_or_else
     maybe_proc = Maybe(nil)
 

@@ -29,8 +29,10 @@ module MaybeRuby
 
     # Tested
     def apply(ff=nil)
+      return Maybe(nil) if @value.is_a?(Nothing)
+
       f = ff && ff.is_a?(Maybe) && ff.get
-      return Maybe(f) unless f and f.is_a?(Proc) and @value.is_a?(Just)
+      return Maybe(f) unless f and f.is_a?(Proc)
       return Maybe(f.(@value.get))
     end
   end
