@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class TestMaybeRuby < Minitest::Test
+class TestMaybe < Minitest::Test
 
 
   def setup
@@ -57,12 +57,12 @@ class TestMaybeRuby < Minitest::Test
       .then(->(int) { int - 5 })
       .then(->(int) { nil })
       .or_else(->() {
-        @errors = "ok"
-        "error returned"
-      })
+      @errors = "ok"
+      "error returned"
+    })
       .get, "error returned"
 
-      assert_equal @errors, "ok"
+    assert_equal @errors, "ok"
   end
 
 
@@ -75,5 +75,67 @@ class TestMaybeRuby < Minitest::Test
     assert_equal Maybe(3)
       .then()
       .get, 3
+  end
+
+
+  def test_apply
+    maybe_proc = Maybe(->(n) { n*n })
+
+    assert_equal Maybe(3)
+      .apply(maybe_proc)
+      .get, 9
+  end
+
+
+  def test_apply_chained_with_then
+    maybe_proc = Maybe(->(n) { n*n })
+
+    assert_equal Maybe(3)
+      .apply(maybe_proc)
+      .then(->(n) { n-1 })
+      .get, 8
+  end
+
+
+  def test_apply_with_no_proc
+    maybe_proc = Maybe(12)
+
+    assert_equal Maybe(3)
+      .apply(maybe_proc)
+      .get, 12
+  end
+
+
+  def test_apply_with_nil
+    maybe_proc = Maybe(nil)
+
+    assert_equal Maybe(3)
+      .apply(maybe_proc)
+      .get, nil
+  end
+
+
+  def test_apply_with_no_params
+    assert_equal Maybe(3)
+      .apply
+      .get, nil
+  end
+
+
+  def test_apply_with_nil_and_or_else
+    maybe_proc = Maybe(nil)
+
+    assert_equal Maybe(3)
+      .apply(maybe_proc)
+      .or_else(666)
+      .get, 666
+  end
+
+
+  def test_apply_complex_example
+    assert_equal Maybe(3)
+      .then(->(n) { n*n })
+      .apply( Maybe(666).then(->(nb) { ->(nbb) { nb + nbb } }) )
+      .get, 675
   end
 end
