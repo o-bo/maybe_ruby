@@ -157,13 +157,13 @@ class TestMaybe < Minitest::Test
     @errors = nil
     assert_equal Maybe(3)
       .then(->(int) { int * 2 })
-      .or_else(->() {
+      .else(->() {
         @errors = "@first"
         "first error returned"
       })
-      .then(->(int) { int - 5 })
+      .or(->(int) { int - 5 })
       .then(->(int) { nil })
-      .or_else(->() {
+      .else(->() {
         @errors = "@second"
         "second error returned"
       })
@@ -177,13 +177,13 @@ class TestMaybe < Minitest::Test
     @errors = nil
     assert_equal Maybe(3)
       .then(->(int) { int * 2 })
-      .or_else(->() {
+      .else(->() {
         @errors = "@first"
         "first error returned"
       })
-      .then(->(int) { int - 5 })
+      .or(->(int) { int - 5 })
       .then(->(int) { int - 1 })
-      .or_else(->() {
+      .else(->() {
         @errors = "@second"
         "second error returned"
       })
