@@ -1,20 +1,23 @@
 module MaybeRuby
   class Done
 
-    def initialize
+    def initialize(value)
+      @value = value
     end
 
 
     def get
-      nil
+      @value
     end
 
-    def then(value)
-      nil
+
+    def then
+      @value
     end
+
 
     def or_else(else_value)
-      nil
+      @value
     end
   end
 end

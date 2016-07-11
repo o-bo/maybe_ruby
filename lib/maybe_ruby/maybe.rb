@@ -5,6 +5,8 @@ module MaybeRuby
       @value = value ?
         Just.new(value) :
         Nothing.new
+      # Overwrite by default value if it is a Done
+      @value = Done.new(value.get) if value.is_a?(Done)
     end
 
 
@@ -16,13 +18,14 @@ module MaybeRuby
 
     # Tested
     def or_else(else_value)
-      Maybe(@value.or_else(else_value)) unless @value.is_a?(Done)
+      return Maybe(@value.or_else(else_value)) if @value.is_a?(Just)
+      return Maybe(Done.new(@value.or_else(else_value)))
     end
 
 
     # Tested
     def then(f=nil)
-      return if @value.is_a?(Done)
+      return Maybe(Done.new(@value.get)) if @value.is_a?(Done)
       return Maybe(@value.get) unless f and f.is_a?(Proc) and @value.is_a?(Just)
       return Maybe(f.(@value.get))
     end
@@ -30,7 +33,6 @@ module MaybeRuby
 
     # Tested
     def apply(ff=nil)
-      return if @value.is_a?(Done)
       return Maybe(nil) if @value.is_a?(Nothing)
 
       f = ff && ff.is_a?(Maybe) && ff.get
