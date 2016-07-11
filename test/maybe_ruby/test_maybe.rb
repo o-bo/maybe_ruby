@@ -50,22 +50,6 @@ class TestMaybe < Minitest::Test
   end
 
 
-  def test_chain_then_with_nil_and_side_effects
-    @errors = nil
-    assert_equal Maybe(3)
-      .then(->(int) { int * 2 })
-      .then(->(int) { int - 5 })
-      .then(->(int) { nil })
-      .or_else(->() {
-      @errors = "ok"
-      "error returned"
-    })
-      .get, "error returned"
-
-    assert_equal @errors, "ok"
-  end
-
-
   def test_then_on_nothing
     assert_nil Maybe(nil).then(->(v) { v * 2 }).get
   end
@@ -146,5 +130,65 @@ class TestMaybe < Minitest::Test
       .then(->(n) { n*n })
       .apply( Maybe(666).then(->(nb) { ->(nbb) { nb + nbb } }) )
       .get, 675
+  end
+
+
+  def test_done_1
+    @errors = nil
+    assert_equal Maybe(3)
+      .then(->(int) { nil })
+      .or_else(->() {
+        @errors = "@First"
+        "first error returned"
+      })
+      .then(->(int) { int - 5 })
+      .then(->(int) { nil })
+      .or_else(->() {
+        @errors = "ok"
+        "second error returned"
+      })
+      .get, "first error returned"
+
+    assert_equal @errors, "@First"
+  end
+
+
+  def test_done_2
+    @errors = nil
+    assert_equal Maybe(3)
+      .then(->(int) { int * 2 })
+      .or_else(->() {
+        @errors = "@first"
+        "first error returned"
+      })
+      .then(->(int) { int - 5 })
+      .then(->(int) { nil })
+      .or_else(->() {
+        @errors = "@second"
+        "second error returned"
+      })
+      .get, "second error returned"
+
+    assert_equal @errors, "@second"
+  end
+
+
+  def test_done_3
+    @errors = nil
+    assert_equal Maybe(3)
+      .then(->(int) { int * 2 })
+      .or_else(->() {
+        @errors = "@first"
+        "first error returned"
+      })
+      .then(->(int) { int - 5 })
+      .then(->(int) { int - 1 })
+      .or_else(->() {
+        @errors = "@second"
+        "second error returned"
+      })
+      .get, 0
+
+    assert_equal @errors, nil
   end
 end
