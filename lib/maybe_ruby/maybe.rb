@@ -21,6 +21,7 @@ module MaybeRuby
       return Maybe(@value.or_else(else_value)) if @value.is_a?(Just)
       return Maybe(Done.new(@value.or_else(else_value)))
     end
+    alias_method :else, :or_else
 
 
     # Tested
@@ -29,6 +30,7 @@ module MaybeRuby
       return Maybe(@value.get) unless f and f.is_a?(Proc) and @value.is_a?(Just)
       return Maybe(f.(@value.get))
     end
+    alias_method :or, :then
 
 
     # Tested
