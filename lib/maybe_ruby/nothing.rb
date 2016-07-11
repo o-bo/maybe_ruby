@@ -12,9 +12,9 @@ module MaybeRuby
 
     def or_else(else_value)
       if else_value.respond_to?(:call)
-        else_value.call
+        return else_value.call
       else
-        else_value
+        return else_value
       end
     end
   end
