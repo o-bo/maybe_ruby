@@ -157,13 +157,13 @@ class TestMaybe < Minitest::Test
     @errors = nil
     assert_equal Maybe(3)
       .then(->(int) { int * 2 })
-      .or_else(->() {
+      .else(->() {
         @errors = "@first"
         "first error returned"
       })
-      .then(->(int) { int - 5 })
+      .or(->(int) { int - 5 })
       .then(->(int) { nil })
-      .or_else(->() {
+      .else(->() {
         @errors = "@second"
         "second error returned"
       })
@@ -177,18 +177,61 @@ class TestMaybe < Minitest::Test
     @errors = nil
     assert_equal Maybe(3)
       .then(->(int) { int * 2 })
-      .or_else(->() {
+      .else(->() {
         @errors = "@first"
         "first error returned"
       })
-      .then(->(int) { int - 5 })
+      .or(->(int) { int - 5 })
       .then(->(int) { int - 1 })
-      .or_else(->() {
+      .else(->() {
         @errors = "@second"
         "second error returned"
       })
       .get, 0
 
     assert_equal @errors, nil
+  end
+
+
+  def test_bind
+    assert_equal Maybe(3)
+      .bind(->(x) { Maybe(2) })
+      .get, 2
+  end
+
+
+  def test_bind_no_maybe
+    assert_equal Maybe(3)
+      .bind(->(x) { 2 })
+      .get, 2
+  end
+
+
+  def test_bind_no_proc
+    assert_equal Maybe(3)
+      .bind(Maybe(2))
+      .get, 3
+  end
+
+
+  def test_bind_proc_nil
+    assert_equal Maybe(3)
+      .bind(nil)
+      .get, 3
+  end
+
+
+  def test_bind_nothing
+    assert_equal Maybe(nil)
+      .bind(->(x) { Maybe(2) })
+      .get, nil
+  end
+
+
+  def test_bind_done
+    assert_equal Maybe(nil)
+      .else(3)
+      .bind(->(x) { Maybe(2) })
+      .get, 3
   end
 end

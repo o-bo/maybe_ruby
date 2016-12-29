@@ -31,6 +31,20 @@ module MaybeRuby
       return Maybe(f.(@value.get))
     end
     alias_method :or, :then
+    alias_method :map, :then
+
+
+    # Tested
+    def bind(f=nil)
+      return Maybe(Done.new(@value.get)) if @value.is_a?(Done)
+      return Maybe(@value.get) unless f and f.is_a?(Proc) and @value.is_a?(Just)
+
+      result = f.(@value.get)
+      return Maybe(result.get) if result.is_a?(Maybe)
+      return Maybe(result)
+    end
+    alias_method :flat_map, :bind
+    alias_method :fmap, :bind
 
 
     # Tested
