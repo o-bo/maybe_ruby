@@ -40,7 +40,7 @@ module MaybeRuby
       return Maybe(@value.get) unless f and f.is_a?(Proc) and @value.is_a?(Just)
 
       result = f.(@value.get)
-      return Maybe(result.get) if result.is_a?(Just) || result.is_a?(None) || result.is_a?(Done)
+      return Maybe(result.get) if result.is_a?(Maybe)
       return Maybe(result)
     end
     alias_method :flat_map, :bind
