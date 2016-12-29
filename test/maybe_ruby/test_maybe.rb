@@ -191,4 +191,47 @@ class TestMaybe < Minitest::Test
 
     assert_equal @errors, nil
   end
+
+
+  def test_bind
+    assert_equal Maybe(3)
+      .bind(->(x) { Maybe(2) })
+      .get, 2
+  end
+
+
+  def test_bind_no_maybe
+    assert_equal Maybe(3)
+      .bind(->(x) { 2 })
+      .get, 2
+  end
+
+
+  def test_bind_no_proc
+    assert_equal Maybe(3)
+      .bind(Maybe(2))
+      .get, 3
+  end
+
+
+  def test_bind_proc_nil
+    assert_equal Maybe(3)
+      .bind(nil)
+      .get, 3
+  end
+
+
+  def test_bind_nothing
+    assert_equal Maybe(nil)
+      .bind(->(x) { Maybe(2) })
+      .get, nil
+  end
+
+
+  def test_bind_done
+    assert_equal Maybe(nil)
+      .else(3)
+      .bind(->(x) { Maybe(2) })
+      .get, 3
+  end
 end
